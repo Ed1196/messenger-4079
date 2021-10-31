@@ -18,7 +18,6 @@ const Home = (props) => {
   const classes = useStyles();
   const { user, logout, fetchConversations } = props;
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-
   useEffect(() => {
     if (user.id) {
       setIsLoggedIn(true);
