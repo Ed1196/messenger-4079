@@ -47,7 +47,7 @@ const Chat = (props) => {
     await props.clickHandler(reqBody, unreadCount);
     await props.setActiveChat(conversation.otherUser.username);
   };
-
+  const disableUnread =  activeConversation !== conversation.otherUser.username;
   return (
     <Box onClick={() => handleClick(conversation)} className={classes.root}>
       <BadgeAvatar
@@ -57,7 +57,7 @@ const Chat = (props) => {
         sidebar={true}
       />
       <ChatContent conversation={conversation} />
-      {!activeConversation && <Badge badgeContent={unreadCount} color="primary"/>}
+      {disableUnread && <Badge badgeContent={unreadCount} color="primary"/>}
     </Box>
   );
 };
