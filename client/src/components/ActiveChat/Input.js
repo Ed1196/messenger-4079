@@ -21,7 +21,6 @@ const Input = (props) => {
   const classes = useStyles();
   const [text, setText] = useState("");
   const { postMessage, otherUser, conversationId, user, activeConversation } = props;
-  console.log(activeConversation);
   const handleChange = (event) => {
     setText(event.target.value);
   };
