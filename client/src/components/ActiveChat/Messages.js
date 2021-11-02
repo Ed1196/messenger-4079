@@ -1,15 +1,16 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Box } from "@material-ui/core";
 import { SenderBubble, OtherUserBubble } from "../ActiveChat";
 import moment from "moment";
 
 const Messages = (props) => {
   const { messages, otherUser, userId } = props;
-  console.log(userId);
+  useEffect(() =>{
+    messages = messages.reverse();
+  }, [messages])
   return (
     <Box>
       {messages.map((message) => {
-        console.log(message.senderId);
         const time = moment(message.createdAt).format("h:mm");
 
         return message.senderId === userId ? (
@@ -17,7 +18,7 @@ const Messages = (props) => {
         ) : (
           <OtherUserBubble key={message.id} text={message.text} time={time} otherUser={otherUser} />
         );
-      }).reverse()}
+      })}
     </Box>
   );
 };
