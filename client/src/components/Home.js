@@ -46,7 +46,7 @@ const Home = (props) => {
       </Button>
       <Grid container component="main" className={classes.root}>
         <CssBaseline />
-        <SidebarContainer />
+        <SidebarContainer user={user}/>
         <ActiveChat />
       </Grid>
     </>

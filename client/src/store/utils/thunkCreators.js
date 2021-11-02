@@ -108,6 +108,15 @@ export const postMessage = (body) => async (dispatch) => {
   }
 };
 
+export const updateMessages = async (body) => {
+  try {
+    const { data } = await axios.post("/api/update-messages", body);
+    return data;
+  } catch (error) {
+    console.error(error);
+  }
+}
+
 export const searchUsers = (searchTerm) => async (dispatch) => {
   try {
     const { data } = await axios.get(`/api/users/${searchTerm}`);

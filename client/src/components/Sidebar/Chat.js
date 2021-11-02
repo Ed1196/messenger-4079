@@ -1,5 +1,5 @@
 import React from "react";
-import { Box } from "@material-ui/core";
+import { Badge, Box } from "@material-ui/core";
 import { BadgeAvatar, ChatContent } from "../Sidebar";
 import { makeStyles } from "@material-ui/core/styles";
 import { setActiveChat } from "../../store/activeConversation";
@@ -23,8 +23,28 @@ const Chat = (props) => {
   const classes = useStyles();
   const { conversation } = props;
   const { otherUser } = conversation;
+  const { messages } = conversation;
+  // Will disable badge showing unread messages when we are currently in the chat window
+  const { activeConversation } = props
+  /*
+  Since all messages have a 'read' flag, we can count the ones that have it set to false to count the amount
+  of unread messages that we have. 
+  */
+  let unreadCount = messages.reduce((accumulator, currValue) => {
+    if(currValue.senderId !== props.user.id) {
+      if(!currValue.read) {
+        accumulator += 1;
+      }
+    };
+    return accumulator;
+  }, 0);
 
   const handleClick = async (conversation) => {
+    
+    const reqBody = {
+      conversationId: conversation.id
+    }
+    await props.clickHandler(reqBody, unreadCount);
     await props.setActiveChat(conversation.otherUser.username);
   };
 
@@ -37,9 +57,16 @@ const Chat = (props) => {
         sidebar={true}
       />
       <ChatContent conversation={conversation} />
+      {!activeConversation && <Badge badgeContent={unreadCount} color="primary"/>}
     </Box>
   );
 };
+
+const mapStateToProps = (state) => {
+  return {
+    activeConversation: state.activeConversation
+  }
+}
 
 const mapDispatchToProps = (dispatch) => {
   return {
@@ -49,4 +76,4 @@ const mapDispatchToProps = (dispatch) => {
   };
 };
 
-export default connect(null, mapDispatchToProps)(Chat);
+export default connect(mapStateToProps, mapDispatchToProps)(Chat);
