@@ -10,10 +10,11 @@ export const addMessageToStore = (state, payload) => {
     newConvo.latestMessageText = message.text;
     return [newConvo, ...state];
   }
+  // Switched unshift to push since our list is already in the right order coming from the server
   return state.map((convo) => {
     if (convo.id === message.conversationId) {
       const updateConvo = {...convo};
-      updateConvo.messages.unshift(message);
+      updateConvo.messages.push(message);
       updateConvo.latestMessageText = message.text;
       return updateConvo;
     } else {

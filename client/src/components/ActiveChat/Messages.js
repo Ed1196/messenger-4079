@@ -5,9 +5,6 @@ import moment from "moment";
 
 const Messages = (props) => {
   const { messages, otherUser, userId } = props;
-  useEffect(() =>{
-    messages = messages.reverse();
-  }, [messages])
   return (
     <Box>
       {messages.map((message) => {
