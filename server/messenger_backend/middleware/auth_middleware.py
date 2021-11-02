@@ -19,7 +19,6 @@ class AuthMiddleware:
         self.get_response = get_response
 
     def __call__(self, request):
-
         token = request.headers.get("x-access-token")
         user = None
         try:
