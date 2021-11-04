@@ -32,12 +32,16 @@ const Sidebar = (props) => {
    in the conversations state. 
    */
   const onChatClickedHandler = async (body, unreadCount) => {
-    const newConvo = await updateMessages(body);
-    if(unreadCount > 0 && newConvo) {
-      const convoIndx = conversations.findIndex(convo => convo.id === newConvo.convo.id)
-      let updatedConvos = [...conversations];
-      updatedConvos[convoIndx].messages = newConvo.convo.messages;
-      gotConversations(updatedConvos); 
+    if(body.conversationId) {
+      const newConvo = await updateMessages(body);
+      if (unreadCount > 0 && newConvo) {
+        const convoIndx = conversations.findIndex(
+          (convo) => convo.id === newConvo.convo.id
+        );
+        let updatedConvos = [...conversations];
+        updatedConvos[convoIndx].messages = newConvo.convo.messages;
+        gotConversations(updatedConvos);
+      }
     }
   };
 

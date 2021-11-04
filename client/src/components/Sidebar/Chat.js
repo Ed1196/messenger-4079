@@ -21,33 +21,18 @@ const useStyles = makeStyles((theme) => ({
 
 const Chat = (props) => {
   const classes = useStyles();
-  const { conversation } = props;
-  const { otherUser } = conversation;
-  const { messages } = conversation;
-  // Will disable badge showing unread messages when we are currently in the chat window
-  const { activeConversation } = props
-  /*
-  Since all messages have a 'read' flag, we can count the ones that have it set to false to count the amount
-  of unread messages that we have. 
-  */
-  let unreadCount = messages.reduce((accumulator, currValue) => {
-    if(currValue.senderId !== props.user.id) {
-      if(!currValue.read) {
-        accumulator += 1;
-      }
-    };
-    return accumulator;
-  }, 0);
-
+  const { conversation, activeConversation } = props;
+  const { otherUser, unread } = conversation;
   const handleClick = async (conversation) => {
     
     const reqBody = {
       conversationId: conversation.id
     }
-    await props.clickHandler(reqBody, unreadCount);
+    await props.clickHandler(reqBody, unread);
     await props.setActiveChat(conversation.otherUser.username);
   };
-  const disableUnread =  activeConversation !== conversation.otherUser.username;
+  const disableUnread = activeConversation !== conversation.otherUser.username;
+
   return (
     <Box onClick={() => handleClick(conversation)} className={classes.root}>
       <BadgeAvatar
@@ -56,8 +41,12 @@ const Chat = (props) => {
         online={otherUser.online}
         sidebar={true}
       />
-      <ChatContent conversation={conversation} />
-      {disableUnread && <Badge badgeContent={unreadCount} color="primary"/>}
+      <ChatContent
+        conversation={conversation}
+        unread={unread}
+        disableUnread={disableUnread}
+      />
+      {disableUnread && <Badge badgeContent={unread} color="primary" />}
     </Box>
   );
 };

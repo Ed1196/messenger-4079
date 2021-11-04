@@ -20,7 +20,7 @@ const useStyles = makeStyles(() => ({
 const Input = (props) => {
   const classes = useStyles();
   const [text, setText] = useState("");
-  const { postMessage, otherUser, conversationId, user, activeConversation } = props;
+  const { postMessage, otherUser, conversationId, user } = props;
   const handleChange = (event) => {
     setText(event.target.value);
   };
@@ -31,10 +31,11 @@ const Input = (props) => {
     const reqBody = {
       text: event.target.text.value,
       recipientId: otherUser.id,
-      conversationId: conversationId,
+      conversationId,
       sender: conversationId ? null : user,
+      senderName: user.username,
     };
-    await postMessage(reqBody);
+    await postMessage(reqBody, user.id);
     setText("");
   };
 
@@ -54,18 +55,12 @@ const Input = (props) => {
   );
 };
 
-const mapStateToProps = (state) => {
-  return {
-    activeConversation: state.activeConversation,
-  };
-}
-
 const mapDispatchToProps = (dispatch) => {
   return {
-    postMessage: (message) => {
-      dispatch(postMessage(message));
+    postMessage: (message, userId) => {
+      dispatch(postMessage(message, userId));
     },
   };
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(Input);
+export default connect(null, mapDispatchToProps)(Input);

@@ -6,16 +6,17 @@ export const addMessageToStore = (state, payload) => {
       id: message.conversationId,
       otherUser: sender,
       messages: [message],
+      unread: payload.userId ? 0 : 1,
     };
     newConvo.latestMessageText = message.text;
     return [newConvo, ...state];
   }
-  // Switched unshift to push since our list is already in the right order coming from the server
   return state.map((convo) => {
     if (convo.id === message.conversationId) {
       const updateConvo = {...convo};
       updateConvo.messages.push(message);
       updateConvo.latestMessageText = message.text;
+      updateConvo.unread = payload.userId ? 0 : updateConvo.unread + 1;
       return updateConvo;
     } else {
       return convo;
