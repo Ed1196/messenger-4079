@@ -14,7 +14,7 @@ export const addMessageToStore = (state, payload) => {
   }
   return state.map((convo) => {
     if (convo.id === message.conversationId) {
-      const updateConvo = { ...convo };
+      const updateConvo = {...convo};
       updateConvo.messages.push(message);
       updateConvo.latestMessageText = message.text;
       updateConvo.latestReadByOtherId = payload.userId
@@ -27,6 +27,22 @@ export const addMessageToStore = (state, payload) => {
     }
   });
 };
+
+export const updateMessageInStore = (state, convoId) => {
+  return state.map((convo) => {
+    if(convo.id === convoId) {
+      const updateConvo = {...convo};
+      const messages = [...convo.messages]
+      const indx = updateConvo.messages.length - 1;
+      const updateMessage = {...messages[indx], read:true};
+      convo.messages[indx] = updateMessage;
+      updateConvo.latestReadByOtherId = updateMessage.id;
+      return updateConvo;
+    } else {
+      return convo;
+    }
+  });
+}
 
 export const addOnlineUserToStore = (state, id) => {
   return state.map((convo) => {

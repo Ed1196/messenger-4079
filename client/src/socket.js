@@ -4,6 +4,7 @@ import {
   setNewMessage,
   removeOfflineUser,
   addOnlineUser,
+  markLastMessageRead,
 } from "./store/conversations";
 import { updateMessages } from "./store/utils/thunkCreators";
 
@@ -19,11 +20,23 @@ socket.on("connect", () => {
   socket.on("remove-offline-user", (id) => {
     store.dispatch(removeOfflineUser(id));
   });
+
+  socket.on("ack-message", (data) => {
+    const state = store.getState();
+    if (state.user.id === data.senderId) {
+      store.dispatch(markLastMessageRead(data.conversationId))
+    }
+  })
+
   socket.on("new-message", (data) => {
     const state = store.getState();
     if (state.user.id === data.message.recipientId) {
       store.dispatch(setNewMessage(data.message, data.sender));
       if (state.activeConversation === data.message.senderName) {
+        socket.emit("ack-message", {
+          senderId: data.message.senderId,
+          conversationId: data.message.conversationId,
+        });
         updateMessages({
           conversationId: data.message.conversationId,
         });
