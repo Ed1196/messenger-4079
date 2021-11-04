@@ -25,12 +25,6 @@ const Sidebar = (props) => {
   const classes = useStyles();
   const conversations = props.conversations || [];
   const { handleChange, searchTerm, gotConversations } = props;
-  /*
-   Method used to change the state of conversations so that it reflects the user reading the current un-read messages.
-   When a user click on a chat box, the list of unread messages will be marked read on the db.
-   Once marked read, the new form of that conversation is returned to use and we can update that one conversations
-   in the conversations state. 
-   */
   const onChatClickedHandler = async (body, unreadCount) => {
     if(body.conversationId) {
       const newConvo = await updateMessages(body);
@@ -57,7 +51,6 @@ const Sidebar = (props) => {
         .map((conversation) => {
           return (
             <Chat
-              user = {props.user}
               conversation={conversation}
               key={conversation.otherUser.username}
               clickHandler={onChatClickedHandler}

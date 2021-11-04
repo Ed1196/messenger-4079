@@ -21,7 +21,7 @@ const useStyles = makeStyles((theme) => ({
 
 const Chat = (props) => {
   const classes = useStyles();
-  const { conversation, activeConversation } = props;
+  const { conversation, activeConversation, user } = props;
   const { otherUser, unread } = conversation;
   const handleClick = async (conversation) => {
     
@@ -29,7 +29,7 @@ const Chat = (props) => {
       conversationId: conversation.id
     }
     await props.clickHandler(reqBody, unread);
-    await props.setActiveChat(conversation.otherUser.username);
+    await props.setActiveChat(conversation.otherUser.username, user.username);
   };
   const disableUnread = activeConversation !== conversation.otherUser.username;
 
@@ -53,7 +53,8 @@ const Chat = (props) => {
 
 const mapStateToProps = (state) => {
   return {
-    activeConversation: state.activeConversation
+    activeConversation: state.activeConversation,
+    user: state.user
   }
 }
 
