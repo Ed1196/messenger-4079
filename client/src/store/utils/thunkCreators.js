@@ -112,7 +112,7 @@ export const postMessage = (body, userId) => async (dispatch) => {
 
 export const updateMessages = async (body) => {
   try {
-    const { data } = await axios.post("/api/update-messages", body);
+    const { data } = await axios.put("/api/messages/read-status", body);
     return data;
   } catch (error) {
     console.error(error);
