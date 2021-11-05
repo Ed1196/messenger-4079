@@ -20,7 +20,6 @@ export const addMessageToStore = (state, payload) => {
       updatedConvos[findIndex].unread = payload.userId ? 0 : 1;
       return updatedConvos;
     } else {
-      console.log("HERE");
       return [newConvo, ...state];
     }
   }
