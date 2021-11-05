@@ -25,10 +25,7 @@ class UpdateMessages(APIView):
                 if user_id not in (convo.user1.id, convo.user2.id):
                     return HttpResponse(status=403)
                 messages = convo.messages.all()
-                for m in messages:
-                    if m.senderId != user.id:
-                        m.read = True
-                        m.save()
+                messages.exclude(senderId=user_id).update(read=True)
                 convo_dict = {
                     "id": convo.id,
                     "messages": [
