@@ -17,9 +17,6 @@ export const addMessageToStore = (state, payload) => {
       const updateConvo = {...convo};
       updateConvo.messages.push(message);
       updateConvo.latestMessageText = message.text;
-      updateConvo.latestReadByOtherId = payload.userId
-        ? updateConvo.latestReadByOtherId
-        : message.id;
       updateConvo.unread = payload.userId ? 0 : updateConvo.unread + 1;
       return updateConvo;
     } else {

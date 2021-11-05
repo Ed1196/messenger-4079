@@ -5,6 +5,7 @@ import { connect } from "react-redux";
 import { Search, Chat, CurrentUser } from "./index.js";
 import { updateMessages } from "../../store/utils/thunkCreators.js";
 import { gotConversations } from "../../store/conversations.js";
+import socket from "../../socket.js";
 
 const useStyles = makeStyles(() => ({
   root: {
@@ -33,10 +34,12 @@ const Sidebar = (props) => {
           (convo) => convo.id === data.convo.id
         );
         const updatedConvos = [...conversations];
-        console.log(updatedConvos[convoIndx]);
-        console.log(data.convo);
         updatedConvos[convoIndx] = data.convo;
         gotConversations(updatedConvos);
+        socket.emit("ack-message", {
+          senderId: data.convo.otherUser.id,
+          conversationId: data.convo.id,
+        });
       }
     }
   };

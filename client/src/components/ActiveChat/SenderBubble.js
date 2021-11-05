@@ -38,7 +38,6 @@ const SenderBubble = (props) => {
   const { time, text, lastReadByOtherId, id  } = props;
   return (
     <Box className={classes.root}>
-      {props.read ? 'True' : 'False'}
       <Typography className={classes.date}>{time}</Typography>
       <Box className={classes.bubble}>
         <Typography className={classes.text}>{text}</Typography>
