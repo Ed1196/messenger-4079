@@ -40,12 +40,15 @@ class Conversations(APIView):
                         message.to_dict(["id", "text", "senderId", "createdAt", "read"])
                         for message in convo.messages.all().reverse()
                     ],
+                    "unread": convo.messages.filter(read=False).exclude(senderId=user_id).count(),
                 }
 
                 # set properties for notification count and latest message preview
                 lastIndex = len(convo_dict["messages"]) - 1
                 convo_dict["latestMessageText"] = convo_dict["messages"][lastIndex]["text"]
-
+                lastReadByOther = convo.messages.filter(read=True).filter(senderId=user_id).first()
+                if lastReadByOther is not None:
+                    convo_dict["latestReadByOtherId"] = lastReadByOther.id
                 # set a property "otherUser" so that frontend will have easier access
                 user_fields = ["id", "username", "photoUrl"]
                 if convo.user1 and convo.user1.id != user_id:

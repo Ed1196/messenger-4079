@@ -31,6 +31,15 @@ def new_message(sid, message):
     )
 
 
+@sio.on("ack-message")
+def ack_message(sid, _ack_message):
+    sio.emit(
+        "ack-message",
+        {"senderId": _ack_message["senderId"], "conversationId": _ack_message["conversationId"]},
+        skip_sid=sid
+    )
+
+
 @sio.on("logout")
 def logout(sid, user_id):
     if user_id in online_users:
