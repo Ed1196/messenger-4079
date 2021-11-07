@@ -93,13 +93,15 @@ const sendMessage = (data, body) => {
 
 // message format to send: {recipientId, text, conversationId}
 // conversationId will be set to null if its a brand new conversation
-export const postMessage = (body) => async (dispatch) => {
+export const postMessage = (body, userId) => async (dispatch) => {
   try {
-    const data = await saveMessage(body);
+    let data = await saveMessage(body);
+    data.message.senderName = body.senderName;
+    data.message.recipientId = body.recipientId;
     if (!body.conversationId) {
       dispatch(addConversation(body.recipientId, data.message));
     } else {
-      dispatch(setNewMessage(data.message));
+      dispatch(setNewMessage(data.message,null,userId));
     }
 
     sendMessage(data, body);
@@ -107,6 +109,15 @@ export const postMessage = (body) => async (dispatch) => {
     console.error(error);
   }
 };
+
+export const updateMessages = async (body) => {
+  try {
+    const { data } = await axios.put("/api/messages/read-status", body);
+    return data;
+  } catch (error) {
+    console.error(error);
+  }
+}
 
 export const searchUsers = (searchTerm) => async (dispatch) => {
   try {
