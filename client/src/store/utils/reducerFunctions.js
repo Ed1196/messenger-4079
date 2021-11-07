@@ -2,25 +2,31 @@ export const addMessageToStore = (state, payload) => {
   const { message, sender } = payload;
   // if sender isn't null, that means the message needs to be put in a brand new convo
   if (sender !== null) {
-    const newConvo = {
-      id: message.conversationId,
-      otherUser: sender,
-      messages: [message],
-      unread: payload.userId ? 0 : 1,
-      latestMessageText: message.text,
-      latestReadByOtherId: null,
-    };
     const findIndex = state.findIndex((c) => c.otherUser.id === sender.id);
-    if (state[findIndex]) {
-      const updatedConvos = [ ...state ];
-      updatedConvos[findIndex].id = newConvo.id;
-      updatedConvos[findIndex].latestMessageText = message.text;
-      updatedConvos[findIndex].latestReadByOtherId = null;
-      updatedConvos[findIndex].messages = [message];
-      updatedConvos[findIndex].unread = payload.userId ? 0 : 1;
-      return updatedConvos;
+    if(state[findIndex]) {
+      return state.map((convo) => {
+        if (convo.otherUser.id === sender.id) {
+          const updateConvo = { ...convo };
+          updateConvo.id = message.conversationId;
+          updateConvo.latestMessageText = message.text;
+          updateConvo.latestReadByOtherId = null;
+          updateConvo.messages.push(message);
+          updateConvo.unread = 0;
+          return updateConvo;
+        } else {
+          return convo;
+        }
+      });
     } else {
-      return [newConvo, ...state];
+      const newConvo = {
+        id: message.conversationId,
+        otherUser: sender,
+        messages: [message],
+        unread: payload.userId ? 0 : 1,
+        latestMessageText: message.text,
+        latestReadByOtherId: null,
+      };
+      return [newConvo, ...state]
     }
   }
   return state.map((convo) => {
@@ -35,6 +41,13 @@ export const addMessageToStore = (state, payload) => {
     }
   });
 };
+export const updateConvoUnread = (state, convoId) => {
+  const findIndex = state.findIndex((c) => c.id === convoId);
+  const updatedConvos = [ ...state ];
+  updatedConvos[findIndex].unread = 0;
+  return updatedConvos;
+
+};
 
 export const updateMessageInStore = (state, convoId) => {
   return state.map((convo) => {
@@ -45,6 +58,7 @@ export const updateMessageInStore = (state, convoId) => {
       const updateMessage = { ...messages[indx], read: true };
       convo.messages[indx] = updateMessage;
       updateConvo.latestReadByOtherId = updateMessage.id;
+      updateConvo.unread = 0;
       return updateConvo;
     } else {
       return convo;

@@ -5,6 +5,7 @@ import {
   removeOfflineUser,
   addOnlineUser,
   markLastMessageRead,
+  setNewUnread,
 } from "./store/conversations";
 import { updateMessages } from "./store/utils/thunkCreators";
 
@@ -40,6 +41,7 @@ socket.on("connect", () => {
         updateMessages({
           conversationId: data.message.conversationId,
         });
+        store.dispatch(setNewUnread(data.message.conversationId));
       }
     }
   });
