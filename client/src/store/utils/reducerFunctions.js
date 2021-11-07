@@ -1,9 +1,12 @@
+import socket from "../../socket";
+import { updateMessages } from "./thunkCreators";
+
 export const addMessageToStore = (state, payload) => {
   const { message, sender } = payload;
   // if sender isn't null, that means the message needs to be put in a brand new convo
   if (sender !== null) {
     const findIndex = state.findIndex((c) => c.otherUser.id === sender.id);
-    if(state[findIndex]) {
+    if (state[findIndex]) {
       return state.map((convo) => {
         if (convo.otherUser.id === sender.id) {
           const updateConvo = { ...convo };
@@ -26,7 +29,7 @@ export const addMessageToStore = (state, payload) => {
         latestMessageText: message.text,
         latestReadByOtherId: null,
       };
-      return [newConvo, ...state]
+      return [newConvo, ...state];
     }
   }
   return state.map((convo) => {
@@ -41,12 +44,18 @@ export const addMessageToStore = (state, payload) => {
     }
   });
 };
-export const updateConvoUnread = (state, convoId) => {
+export const updateConvoUnread = (state, convoId, senderId) => {
+  socket.emit("ack-message", {
+    senderId: senderId,
+    conversationId: convoId,
+  });
+  updateMessages({
+    conversationId: convoId,
+  });
   const findIndex = state.findIndex((c) => c.id === convoId);
-  const updatedConvos = [ ...state ];
+  const updatedConvos = [...state];
   updatedConvos[findIndex].unread = 0;
   return updatedConvos;
-
 };
 
 export const updateMessageInStore = (state, convoId) => {

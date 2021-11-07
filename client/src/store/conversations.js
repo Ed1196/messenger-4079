@@ -43,10 +43,11 @@ export const markLastMessageRead = (convoId) => {
   };
 };
 
-export const setNewUnread = (convoId) => {
+export const setNewUnread = (convoId, senderId) => {
   return {
     type: UPDATE_CONVO_UNREAD,
     convoId,
+    senderId,
   };
 };
 
@@ -96,7 +97,7 @@ const reducer = (state = [], action) => {
     case UPDATE_MESSAGE:
       return updateMessageInStore(state, action.convoId);
     case UPDATE_CONVO_UNREAD:
-      return updateConvoUnread(state, action.convoId);
+      return updateConvoUnread(state, action.convoId, action.senderId);
     case ADD_ONLINE_USER: {
       return addOnlineUserToStore(state, action.id);
     }

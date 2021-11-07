@@ -7,7 +7,6 @@ import {
   markLastMessageRead,
   setNewUnread,
 } from "./store/conversations";
-import { updateMessages } from "./store/utils/thunkCreators";
 
 const socket = io(window.location.origin);
 
@@ -34,14 +33,7 @@ socket.on("connect", () => {
     if (state.user.id === data.message.recipientId) {
       store.dispatch(setNewMessage(data.message, data.sender));
       if (state.activeConversation === data.message.senderName) {
-        socket.emit("ack-message", {
-          senderId: data.message.senderId,
-          conversationId: data.message.conversationId,
-        });
-        updateMessages({
-          conversationId: data.message.conversationId,
-        });
-        store.dispatch(setNewUnread(data.message.conversationId));
+        store.dispatch(setNewUnread(data.message.conversationId, data.message.senderId));
       }
     }
   });
