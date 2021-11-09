@@ -39,7 +39,7 @@ class Conversations(APIView):
                         message.to_dict(["id", "text", "senderId", "createdAt", "read"])
                         for message in convo.messages.all().reverse()
                     ],
-                    "unread": convo.messages.filter(read=False).exclude(senderId=user_id).count(),
+                    "unread": convo.messages.exclude(readBy__id=user_id).count(),
                 }
                 # set properties for notification count and latest message preview
                 lastIndex = len(convo_dict["messages"]) - 1
@@ -58,7 +58,7 @@ class Conversations(APIView):
                         userJSON["online"] = True
                     else:
                         userJSON["online"] = False
-                otherUsersArray.append(userJSON)
+                    otherUsersArray.append(userJSON)
                 convo_dict["otherUsers"] = otherUsersArray
                 conversations_response.append(convo_dict)
             conversations_response.sort(

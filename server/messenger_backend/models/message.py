@@ -2,12 +2,14 @@ from django.db import models
 
 from . import utils
 from .conversation import Conversation
+from .user import User
 
 
 class Message(utils.CustomModel):
     text = models.TextField(null=False)
     senderId = models.IntegerField(null=False)
     read = models.BooleanField(null=False, default=False)
+    readBy = models.ManyToManyField(User)
     conversation = models.ForeignKey(
         Conversation,
         on_delete=models.CASCADE,

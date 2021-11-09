@@ -29,6 +29,7 @@ class Messages(APIView):
                     senderId=sender_id, text=text, conversation=conversation, read=False
                 )
                 message.save()
+                message.readBy.add(user)
                 message_json = message.to_dict()
                 return JsonResponse({"message": message_json, "sender": body["sender"]})
 
@@ -48,6 +49,7 @@ class Messages(APIView):
 
             message = Message(senderId=sender_id, text=text, conversation=conversation)
             message.save()
+            message.readBy.add(user)
             message_json = message.to_dict()
             return JsonResponse({"message": message_json, "sender": sender})
         except Exception as e:
