@@ -22,7 +22,7 @@ class Conversations(APIView):
             user_id = user.id
 
             conversations = (
-                Conversation.objects.filter(Q(user1=user_id) | Q(user2=user_id))
+                Conversation.objects.filter(Q(group_users__id__icontains=user_id))
                 .prefetch_related(
                     Prefetch(
                         "messages", queryset=Message.objects.order_by("-createdAt")
@@ -30,7 +30,6 @@ class Conversations(APIView):
                 )
                 .all()
             )
-
             conversations_response = []
 
             for convo in conversations:
@@ -42,7 +41,6 @@ class Conversations(APIView):
                     ],
                     "unread": convo.messages.filter(read=False).exclude(senderId=user_id).count(),
                 }
-
                 # set properties for notification count and latest message preview
                 lastIndex = len(convo_dict["messages"]) - 1
                 convo_dict["latestMessageText"] = convo_dict["messages"][lastIndex]["text"]
@@ -51,17 +49,17 @@ class Conversations(APIView):
                     convo_dict["latestReadByOtherId"] = lastReadByOther.id
                 # set a property "otherUser" so that frontend will have easier access
                 user_fields = ["id", "username", "photoUrl"]
-                if convo.user1 and convo.user1.id != user_id:
-                    convo_dict["otherUser"] = convo.user1.to_dict(user_fields)
-                elif convo.user2 and convo.user2.id != user_id:
-                    convo_dict["otherUser"] = convo.user2.to_dict(user_fields)
-
-                # set property for online status of the other user
-                if convo_dict["otherUser"]["id"] in online_users:
-                    convo_dict["otherUser"]["online"] = True
-                else:
-                    convo_dict["otherUser"]["online"] = False
-
+                otherUsers = convo.group_users.all().exclude(id=user_id)
+                otherUsersArray = []
+                for user in otherUsers:
+                    userJSON = user.to_dict(user_fields)
+                    # set property for online status of the other user
+                    if user.id in online_users:
+                        userJSON["online"] = True
+                    else:
+                        userJSON["online"] = False
+                otherUsersArray.append(userJSON)
+                convo_dict["otherUsers"] = otherUsersArray
                 conversations_response.append(convo_dict)
             conversations_response.sort(
                 key=lambda convo: convo["messages"][0]["createdAt"],

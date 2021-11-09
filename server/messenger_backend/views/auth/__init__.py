@@ -67,6 +67,7 @@ class Register(APIView):
             username = body.get("username")
             password = body.get("password")
             email = body.get("email")
+
             if not (username and password and email):
                 return JsonResponse(
                     {

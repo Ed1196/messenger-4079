@@ -1,6 +1,6 @@
 from django.contrib.auth.middleware import get_user
 from django.http import HttpResponse, JsonResponse
-from messenger_backend.models import Conversation, Message
+from messenger_backend.models import Conversation, Message, User
 from online_users import online_users
 from rest_framework.views import APIView
 
@@ -19,7 +19,7 @@ class Messages(APIView):
             body = request.data
             conversation_id = body.get("conversationId")
             text = body.get("text")
-            recipient_id = body.get("recipientId")
+            recipient_ids = body.get("recipientIds")
             sender = body.get("sender")
 
             # if we already know conversation id, we can save time and just add it to message and return
@@ -32,12 +32,16 @@ class Messages(APIView):
                 message_json = message.to_dict()
                 return JsonResponse({"message": message_json, "sender": body["sender"]})
 
-            # if we don't have conversation id, find a conversation to m       ake sure it doesn't already exist
-            conversation = Conversation.find_conversation(sender_id, recipient_id)
+            # if we don't have conversation id, find a conversation to make sure it doesn't already exist
+            users_in_group = [sender_id] + recipient_ids
+            conversation = Conversation.find_conversation(users_in_group)
             if not conversation:
                 # create conversation
-                conversation = Conversation(user1_id=sender_id, user2_id=recipient_id)
+                conversation = Conversation()
                 conversation.save()
+                for user_id in users_in_group:
+                    u = User.get_by_id(user_id)
+                    conversation.group_users.add(u)
 
                 if sender and sender["id"] in online_users:
                     sender["online"] = True
