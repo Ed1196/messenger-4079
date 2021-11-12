@@ -5,11 +5,20 @@ from . import utils
 from .user import User
 
 
-class Conversation(utils.CustomModel):
+class UserMessage(utils.CustomModel):
+    user_id = models.IntegerField(null=True)
+    message_id = models.IntegerField(null=True)
 
+
+class LastRead(utils.CustomModel):
+    user_read = models.ManyToManyField(UserMessage)
+
+
+class Conversation(utils.CustomModel):
     createdAt = models.DateTimeField(auto_now_add=True, db_index=True)
     updatedAt = models.DateTimeField(auto_now=True)
     group_users = models.ManyToManyField(User)
+    last_read_by_users = models.ForeignKey(LastRead, on_delete=models.CASCADE, default=None, null=True)
 
     # find conversation given two user Ids
     def find_conversation(user_ids):
