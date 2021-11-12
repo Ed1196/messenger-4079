@@ -24,17 +24,15 @@ class UpdateMessages(APIView):
                 convo = Conversation.objects.filter(id=conversation_id).first()
                 if user_id not in (convo.user1.id, convo.user2.id):
                     return HttpResponse(status=403)
-                messages = convo.messages.all().exclude(senderId=user_id)
-                messages.update(read=True)
-                messages.readBy.add(user)
-
+                messages = convo.messages.all()
+                messages.exclude(senderId=user_id).update(read=True)
                 convo_dict = {
                     "id": convo.id,
                     "messages": [
                         message.to_dict(["id", "text", "senderId", "createdAt", "read"])
                         for message in convo.messages.all().order_by("-createdAt").reverse()
                     ],
-                    "unread": convo.messages.exclude(readBy__id=user_id).count(),
+                    "unread": convo.messages.filter(read=False).exclude(senderId=user_id).count(),
                 }
                 # set properties for notification count and latest message preview
                 lastIndex = len(convo_dict["messages"]) - 1
