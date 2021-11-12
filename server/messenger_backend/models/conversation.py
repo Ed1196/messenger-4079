@@ -7,7 +7,8 @@ from .user import User
 
 class UserMessage(utils.CustomModel):
     user_id = models.IntegerField(null=True)
-    message_id = models.IntegerField(null=True)
+    latest_message_id = models.IntegerField(null=True)
+    unread_messages = models.IntegerField(default=0, null=True)
 
 
 class LastRead(utils.CustomModel):
